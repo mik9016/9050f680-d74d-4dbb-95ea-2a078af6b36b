@@ -31,10 +31,12 @@ const Home = (): React.ReactElement => {
   const [data, setData] = useState<Array<DataItem[]> | []>([])
   const [dataLen, setDataLen] = useState(0)
   const [date, setDate] = useState<string>('0')
+  const [searchFilteredArrays, setSearchFilteredArrays] = useState<
+    Array<DataItem[]> | []
+  >([])
   const [searchValues, setSearchValues] = useState<Array<React.ReactNode> | []>(
     []
   )
-  //<Array<React.ReactNode>
 
   const getData = async () => {
     const url = 'https://tlv-events-app.herokuapp.com/events/uk/london'
@@ -94,7 +96,7 @@ const Home = (): React.ReactElement => {
         }
       }
     }
-    return filteredArr
+    return sortEvents(filteredArr)
   }
 
   useEffect(() => {
@@ -103,13 +105,10 @@ const Home = (): React.ReactElement => {
 
   useEffect(() => {
     const searchFiltered = filterEvents(data)
-
     const sortedSearch = sortToArrays(searchFiltered, 'date')
+    setSearchFilteredArrays(sortedSearch)
     const searchDataToShow = showBetterData(sortedSearch.length, sortedSearch)
     setSearchValues(searchDataToShow)
-    //  setSearchValues(sortedSearch);
-    //  console.log(searchDataToShow)
-    //  console.log(globalCtx.currentSearchValue.length > 0 ? 'sortedSearch' : 'data')
   }, [globalCtx.currentSearchValue])
 
   ////// InView
@@ -121,7 +120,7 @@ const Home = (): React.ReactElement => {
   }
   // const refArr2 = []
   // for (let i = 0; i < dataLen; i++) {
-  //   var map: { [key: string]: string } = {}
+  //   const map: { [key: string]: string } = {}
 
   //   map['myTextA'] = 'Hello!'
   //   map['myTextB'] = 'Goodbye!'
@@ -211,7 +210,11 @@ const Home = (): React.ReactElement => {
   }
 
   const dataLoaded = data.length > 0
-  const checkPosition = (inViewFlag: boolean, index: number): void => {
+  const checkPosition = (
+    inViewFlag: boolean,
+    index: number,
+    data: DataItem[][]
+  ): void => {
     if (dataLoaded) {
       if (inViewFlag) {
         const currentDate = setDateFromString(data[index][0].startTime)
@@ -235,8 +238,15 @@ const Home = (): React.ReactElement => {
     inView12,
   ]
   useEffect(() => {
-    for (let i = 0; i < inViews.length; i++) {
-      checkPosition(inViews[i], i)
+    const isTyping = globalCtx.currentSearchValue.length > 0
+    if (isTyping) {
+      for (let i = 0; i < searchFilteredArrays.length; i++) {
+        checkPosition(inViews[i], i, searchFilteredArrays)
+      }
+    } else {
+      for (let i = 0; i < inViews.length; i++) {
+        checkPosition(inViews[i], i, data)
+      }
     }
   }, [inViews])
 
