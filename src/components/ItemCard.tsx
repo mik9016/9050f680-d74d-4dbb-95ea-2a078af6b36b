@@ -51,6 +51,14 @@ const ItemCard = ({
   const startDate = new Date(start)
   const endDate = new Date(end)
 
+  const showDate = (date: Date): string => {
+    return `${date.getDate()}.${
+      date.getMonth() + 1
+    }.${date.getFullYear()},  ${date.getHours()}:${
+      date.getMinutes() === 0 ? '00' : date.getMinutes()
+    }`
+  }
+
   const noPicUrl = 'https://picsum.photos/200/300'
 
   return (
@@ -61,6 +69,7 @@ const ItemCard = ({
         height: 400,
         margin: { xs: 0, md: 2 },
         my: { xs: 1 },
+        mx: { xs: 1 },
       }}
     >
       <CardHeader
@@ -87,18 +96,10 @@ const ItemCard = ({
           color="text.secondary"
           component="div"
         >
-          {`| Starts: ${startDate.getDate()}.${
-            startDate.getMonth() + 1
-          }.${startDate.getFullYear()},  ${startDate.getHours()}:${
-            startDate.getMinutes() === 0 ? '00' : startDate.getMinutes()
-          }`}
+          {`| Starts: ${showDate(startDate)}`}
         </Typography>
         <Typography variant="body2" color="text.secondary">
-          {`| Ends: ${endDate.getDate()}.${
-            endDate.getMonth() + 1
-          }.${endDate.getFullYear()},  ${endDate.getHours()}:${
-            endDate.getMinutes() === 0 ? '00' : endDate.getMinutes()
-          }`}
+          {`| Ends: ${showDate(endDate)}`}
         </Typography>
       </CardContent>
       <CardActions>

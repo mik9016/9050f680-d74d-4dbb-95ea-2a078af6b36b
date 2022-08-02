@@ -1,4 +1,4 @@
-import React, { FC, ReactElement, useState, useContext } from 'react'
+import React, { useContext } from 'react'
 import { Link } from 'react-router-dom'
 import { Box, Container, Toolbar } from '@mui/material'
 import SearchIcon from '@mui/icons-material/Search'

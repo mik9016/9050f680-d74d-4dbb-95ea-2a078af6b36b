@@ -2,29 +2,39 @@ import React, {
   useEffect,
   useState,
   Suspense,
-  useRef,
   Ref,
-  createRef,
-  RefObject,
   ReactNode,
+  useContext,
 } from 'react'
-import { v4 as uuidv4 } from 'uuid'
-import { Box, CircularProgress, Paper, Typography } from '@mui/material'
+import {
+  Box,
+  CircularProgress,
+  Paper,
+  Typography,
+  ListItem,
+  List,
+} from '@mui/material'
 import axios from 'axios'
 import { DataItem } from '../models/index'
 import { useInView } from 'react-intersection-observer'
+import { GlobalContext } from '../contexts/Context'
+
 const ItemCard = React.lazy(() => import('../components/ItemCard'))
 
 interface Count {
   [key: string]: number
 }
-interface Refs {
-  [key: string]: React.Ref<HTMLDivElement>
-}
 
 const Home = (): React.ReactElement => {
+  const globalCtx = useContext(GlobalContext)
+
   const [data, setData] = useState<Array<DataItem[]> | []>([])
-  const [date, setDate] = useState('0')
+  const [dataLen, setDataLen] = useState(0)
+  const [date, setDate] = useState<string>('0')
+  const [searchValues, setSearchValues] = useState<Array<React.ReactNode> | []>(
+    []
+  )
+  //<Array<React.ReactNode>
 
   const getData = async () => {
     const url = 'https://tlv-events-app.herokuapp.com/events/uk/london'
@@ -34,7 +44,7 @@ const Home = (): React.ReactElement => {
     const sortedData = sortEvents(data)
 
     const dateArrays = sortToArrays(sortedData, 'date')
-
+    setDataLen(dateArrays.length)
     setData(dateArrays)
   }
 
@@ -70,9 +80,37 @@ const Home = (): React.ReactElement => {
     })
   }
 
+  const filterEvents = (data: Array<DataItem[]>): DataItem[] => {
+    const newData = [...data]
+    const filteredArr = []
+    for (let i = 0; i < newData.length; i++) {
+      for (let j = 0; j < newData[i].length; j++) {
+        if (
+          newData[i][j].title
+            .toUpperCase()
+            .includes(globalCtx.currentSearchValue.toUpperCase())
+        ) {
+          filteredArr.push(newData[i][j])
+        }
+      }
+    }
+    return filteredArr
+  }
+
   useEffect(() => {
     getData()
   }, [])
+
+  useEffect(() => {
+    const searchFiltered = filterEvents(data)
+
+    const sortedSearch = sortToArrays(searchFiltered, 'date')
+    const searchDataToShow = showBetterData(sortedSearch.length, sortedSearch)
+    setSearchValues(searchDataToShow)
+    //  setSearchValues(sortedSearch);
+    //  console.log(searchDataToShow)
+    //  console.log(globalCtx.currentSearchValue.length > 0 ? 'sortedSearch' : 'data')
+  }, [globalCtx.currentSearchValue])
 
   ////// InView
   const setDateFromString = (str: string): string => {
@@ -81,6 +119,18 @@ const Home = (): React.ReactElement => {
       newDate.getMonth() + 1
     }.${newDate.getFullYear()}`
   }
+  // const refArr2 = []
+  // for (let i = 0; i < dataLen; i++) {
+  //   var map: { [key: string]: string } = {}
+
+  //   map['myTextA'] = 'Hello!'
+  //   map['myTextB'] = 'Goodbye!'
+  //   var textList = ['A', 'B']
+  //   console.log('I want to say ' + map['myText' + textList[0]])
+
+  //   refArr2.push()
+  // }
+
   const [ref0, inView0] = useInView()
   const [ref1, inView1] = useInView()
   const [ref2, inView2] = useInView()
@@ -111,7 +161,11 @@ const Home = (): React.ReactElement => {
     ref12,
   ]
 
-  const dataShow = (refName: Ref<HTMLDivElement>, index: number): ReactNode => {
+  const dataShow = (
+    refName: Ref<HTMLDivElement>,
+    index: number,
+    data: Array<DataItem[]>
+  ): ReactNode => {
     return (
       <Box
         ref={refName}
@@ -124,7 +178,6 @@ const Home = (): React.ReactElement => {
           minWidth: '100vw',
           alignSelf: 'center',
           mt: 7,
-          border: '1px red solid',
         }}
       >
         {data.length > 0 &&
@@ -145,10 +198,14 @@ const Home = (): React.ReactElement => {
       </Box>
     )
   }
-  const showBetterData = (range: number) => {
+
+  const showBetterData = (
+    range: number,
+    data: Array<DataItem[]>
+  ): Array<React.ReactNode> => {
     const result = []
     for (let i = 0; i < range; i++) {
-      result.push(dataShow(refArr[i], i))
+      result.push(dataShow(refArr[i], i, data))
     }
     return result
   }
@@ -188,7 +245,7 @@ const Home = (): React.ReactElement => {
     return date.toLocaleDateString(locale, { weekday: 'long' })
   }
 
-  const dataToShow = showBetterData(data.length)
+  const dataToShow = showBetterData(data.length, data)
 
   return (
     <>
@@ -211,7 +268,7 @@ const Home = (): React.ReactElement => {
       <Typography
         variant="h4"
         mt="12rem"
-        ml={10}
+        ml={{ xs: 0, md: 10 }}
         color="black"
         fontWeight="fontWeightBold"
       >
@@ -227,10 +284,22 @@ const Home = (): React.ReactElement => {
           alignSelf: 'center',
         }}
       >
-        <Suspense fallback={<CircularProgress />}>
-          {dataToShow.map((item) => {
-            return  item 
-          })}
+        <Suspense fallback={<CircularProgress color="primary" />}>
+          <List>
+            {globalCtx.currentSearchValue.length > 0 ? (
+              searchValues.length === 0 ? (
+                <Typography variant="body1">No Items found</Typography>
+              ) : (
+                searchValues.map((searchItem, idx) => {
+                  return <ListItem key={idx}>{searchItem}</ListItem>
+                })
+              )
+            ) : (
+              dataToShow.map((item, idx) => {
+                return <ListItem key={idx}>{item}</ListItem>
+              })
+            )}
+          </List>
         </Suspense>
       </Box>
     </>
