@@ -22,7 +22,6 @@ export const IconTextField = ({
   const changeHandler = useCallback(
     (e: React.ChangeEvent<HTMLInputElement>): void => {
       setSearchValue(e.currentTarget.value)
-      // globalCtx.setCurrentSearch(e.currentTarget.value)
     },
     []
   )

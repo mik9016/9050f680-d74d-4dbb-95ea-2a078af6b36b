@@ -15,6 +15,7 @@ import LocationOnIcon from '@mui/icons-material/LocationOn'
 import { GlobalContext } from '../contexts/Context'
 
 export interface Props {
+  id?: string
   bandName: string
   avatar: string
   picture: string
@@ -22,9 +23,11 @@ export interface Props {
   venueName: string
   start: string
   end: string
+  hidePlus?: boolean
 }
 
 const ItemCard = ({
+  id,
   bandName,
   avatar,
   picture,
@@ -33,10 +36,12 @@ const ItemCard = ({
   venueName,
   end,
   ref,
+  hidePlus,
 }: Props & { ref?: React.Ref<HTMLDivElement> }): React.ReactElement => {
   const globalCtx = useContext(GlobalContext)
 
   const infos = {
+    id: id,
     bandName: bandName,
     avatar: avatar,
     picture: picture,
@@ -103,9 +108,11 @@ const ItemCard = ({
         </Typography>
       </CardContent>
       <CardActions>
-        <IconButton aria-label="add" onClick={incrementCartNumber}>
-          <AddCircleIcon color="primary" />
-        </IconButton>
+        {!hidePlus ? (
+          <IconButton aria-label="add" onClick={incrementCartNumber}>
+            <AddCircleIcon color="primary" />
+          </IconButton>
+        ) : null}
       </CardActions>
     </Card>
   )

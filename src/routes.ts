@@ -2,7 +2,7 @@ import Home from './pages/Home'
 import Cart from './pages/Cart'
 
 // other
-import { FC } from 'react'
+import React, { FC } from 'react'
 
 // interface
 interface Route {

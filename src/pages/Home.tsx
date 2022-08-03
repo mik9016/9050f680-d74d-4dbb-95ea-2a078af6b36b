@@ -29,8 +29,8 @@ const Home = (): React.ReactElement => {
   const globalCtx = useContext(GlobalContext)
 
   const [data, setData] = useState<Array<DataItem[]> | []>([])
-  const [dataLen, setDataLen] = useState(0)
-  const [date, setDate] = useState<string>('0')
+  // const [dataLen, setDataLen] = useState(0)
+  const [date, setDate] = useState<string>('')
   const [searchFilteredArrays, setSearchFilteredArrays] = useState<
     Array<DataItem[]> | []
   >([])
@@ -40,14 +40,15 @@ const Home = (): React.ReactElement => {
 
   const getData = async () => {
     const url = 'https://tlv-events-app.herokuapp.com/events/uk/london'
-
-    const { data } = await axios.get(url)
-
-    const sortedData = sortEvents(data)
-
-    const dateArrays = sortToArrays(sortedData, 'date')
-    setDataLen(dateArrays.length)
-    setData(dateArrays)
+    try {
+      const { data } = await axios.get(url)
+      const sortedData = sortEvents(data)
+      const dateArrays = sortToArrays(sortedData, 'date')
+      setData(dateArrays)
+      globalCtx.cacheData(dateArrays)
+    } catch (error) {
+      console.error(error)
+    }
   }
 
   const sortToArrays = (ar: DataItem[], field: string): Array<DataItem[]> => {
@@ -98,11 +99,17 @@ const Home = (): React.ReactElement => {
     }
     return sortEvents(filteredArr)
   }
-
+  // Initial Load
   useEffect(() => {
-    getData()
+    if (globalCtx.cartArray.length === 0 && data.length < 1) {
+      getData()
+    } else {
+      const dataAfterCart = [...globalCtx.data]
+      setData(dataAfterCart)
+    }
   }, [])
 
+  // FILTER FUNCTIONALITY
   useEffect(() => {
     const searchFiltered = filterEvents(data)
     const sortedSearch = sortToArrays(searchFiltered, 'date')
@@ -111,24 +118,14 @@ const Home = (): React.ReactElement => {
     setSearchValues(searchDataToShow)
   }, [globalCtx.currentSearchValue])
 
-  ////// InView
   const setDateFromString = (str: string): string => {
     const newDate = new Date(str)
     return `${newDate.getDate()}.${
       newDate.getMonth() + 1
     }.${newDate.getFullYear()}`
   }
-  // const refArr2 = []
-  // for (let i = 0; i < dataLen; i++) {
-  //   const map: { [key: string]: string } = {}
 
-  //   map['myTextA'] = 'Hello!'
-  //   map['myTextB'] = 'Goodbye!'
-  //   var textList = ['A', 'B']
-  //   console.log('I want to say ' + map['myText' + textList[0]])
-
-  //   refArr2.push()
-  // }
+  ////// InView
 
   const [ref0, inView0] = useInView()
   const [ref1, inView1] = useInView()
@@ -184,6 +181,7 @@ const Home = (): React.ReactElement => {
             return (
               <ItemCard
                 key={item['_id']}
+                id={item['_id']}
                 bandName={item['title']}
                 avatar={item['flyerFront']}
                 picture={item['flyerFront']}
@@ -191,6 +189,7 @@ const Home = (): React.ReactElement => {
                 end={item['endTime']}
                 venueName={item['venue']['name']}
                 venue={item['venue']['direction']}
+                hidePlus={false}
               />
             )
           })}
@@ -256,6 +255,32 @@ const Home = (): React.ReactElement => {
   }
 
   const dataToShow = showBetterData(data.length, data)
+  const removeCardItem = (id: string | undefined, data: DataItem[][]): void => {
+    const allItems = [...data]
+    for (let i = 0; i < allItems.length; i++) {
+      for (let j = 0; j < allItems[i].length; j++) {
+        if (allItems[i][j]['_id'] === id) {
+          allItems[i].splice(j, 1)
+          setData(allItems)
+        }
+      }
+    }
+  }
+  // remove Elements
+  const setRightDataValues = (data: DataItem[][]) => {
+    const cart = [...globalCtx.cartArray]
+    const cartIDs = []
+    if (cart.length > 0) {
+      for (let i = 0; i < cart.length; i++) {
+        cartIDs.push(cart[i].id)
+        removeCardItem(cart[i].id, data)
+      }
+    }
+  }
+  useEffect(() => {
+    console.log('odpalone')
+    setRightDataValues(data)
+  }, [globalCtx.cartArray])
 
   return (
     <>

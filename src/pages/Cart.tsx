@@ -1,6 +1,6 @@
 import { v4 as uuidv4 } from 'uuid'
 import React, { ReactElement, FC, useContext } from 'react'
-import { Box, Button } from '@mui/material'
+import { Box, Button, Typography } from '@mui/material'
 import { GlobalContext } from '../contexts/Context'
 import ArrowBackIcon from '@mui/icons-material/ArrowBack'
 
@@ -9,13 +9,12 @@ import { Link } from 'react-router-dom'
 
 const Cart: FC = (): ReactElement => {
   const globalCtx = useContext(GlobalContext)
-  console.log(globalCtx)
 
   return (
     <>
       <Link to="/">
         <Button
-          sx={{ alignSelf: 'start', margin: 2, textDecoration: 'none' }}
+          sx={{ alignSelf: 'start', margin: 2, textDecoration: 'none',marginTop:12 }}
           variant="outlined"
           startIcon={<ArrowBackIcon />}
         >
@@ -33,7 +32,6 @@ const Cart: FC = (): ReactElement => {
         }}
       >
         {globalCtx.cartArray.map((item, idx) => {
-          if (idx < 16) {
             return (
               <ItemCard
                 key={uuidv4()}
@@ -44,11 +42,11 @@ const Cart: FC = (): ReactElement => {
                 end={item.end}
                 venueName={item.venueName}
                 venue={item.venue}
+                hidePlus={true}
               />
             )
-          }
-          return null
         })}
+        {globalCtx.cartArray.length === 0 &&  <Typography variant="body1">No Items found</Typography>}
       </Box>
     </>
   )
