@@ -28,3 +28,7 @@ export interface DataItem {
   __v: number
   _id: string
 }
+
+export interface Count {
+  [key: string]: number
+}

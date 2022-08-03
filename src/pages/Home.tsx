@@ -15,21 +15,15 @@ import {
   List,
 } from '@mui/material'
 import axios from 'axios'
-import { DataItem } from '../models/index'
+import { DataItem, Count } from '../models/index'
 import { useInView } from 'react-intersection-observer'
 import { GlobalContext } from '../contexts/Context'
-
-const ItemCard = React.lazy(() => import('../components/ItemCard'))
-
-interface Count {
-  [key: string]: number
-}
+import ItemCard from '../components/ItemCard'
 
 const Home = (): React.ReactElement => {
   const globalCtx = useContext(GlobalContext)
 
   const [data, setData] = useState<Array<DataItem[]> | []>([])
-  // const [dataLen, setDataLen] = useState(0)
   const [date, setDate] = useState<string>('')
   const [searchFilteredArrays, setSearchFilteredArrays] = useState<
     Array<DataItem[]> | []
@@ -63,7 +57,7 @@ const Home = (): React.ReactElement => {
       countArrays.push([])
     }
     // push elements to the separate arrays
-    ar.forEach((element: any) => {
+    ar.forEach((element: DataItem) => {
       for (let i = 0; i < Object.keys(count).length; i++) {
         if (Object.keys(count)[i] === element.date) {
           countArrays[i].push(element)
@@ -276,7 +270,7 @@ const Home = (): React.ReactElement => {
       }
     }
   }
-  // remove Elements
+  // Remove Elements
   const setRightDataValues = (data: DataItem[][]) => {
     const cart = [...globalCtx.cartArray]
     const cartIDs = []
@@ -305,14 +299,14 @@ const Home = (): React.ReactElement => {
           px: 5,
         }}
       >
-        <Typography variant="h5" color="primary" ml={5}>
+        <Typography variant="h5" color="primary" ml={{ xs: 1, md: 1.5 }}>
           {date}
         </Typography>
       </Paper>
       <Typography
         variant="h4"
         mt="12rem"
-        ml={{ xs: 0, md: 10 }}
+        ml={{ xs: 6, md: 6.5 }}
         color="black"
         fontWeight="fontWeightBold"
       >
