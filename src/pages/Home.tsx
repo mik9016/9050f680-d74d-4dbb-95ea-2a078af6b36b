@@ -111,12 +111,21 @@ const Home = (): React.ReactElement => {
 
   // FILTER FUNCTIONALITY
   useEffect(() => {
-    const searchFiltered = filterEvents(data)
-    const sortedSearch = sortToArrays(searchFiltered, 'date')
-    setSearchFilteredArrays(sortedSearch)
-    const searchDataToShow = showBetterData(sortedSearch.length, sortedSearch)
-    setSearchValues(searchDataToShow)
-  }, [globalCtx.currentSearchValue])
+    if (globalCtx.cartArray.length === 0) {
+      const searchFiltered = filterEvents(data)
+      const sortedSearch = sortToArrays(searchFiltered, 'date')
+      setSearchFilteredArrays(sortedSearch)
+      const searchDataToShow = showBetterData(sortedSearch.length, sortedSearch)
+      setSearchValues(searchDataToShow)
+    } else {
+      setRightDataValues(data)
+      const searchFiltered = filterEvents(data)
+      const sortedSearch = sortToArrays(searchFiltered, 'date')
+      setSearchFilteredArrays(sortedSearch)
+      const searchDataToShow = showBetterData(sortedSearch.length, sortedSearch)
+      setSearchValues(searchDataToShow)
+    }
+  }, [globalCtx.currentSearchValue, globalCtx.cartArray])
 
   const setDateFromString = (str: string): string => {
     const newDate = new Date(str)
@@ -236,6 +245,7 @@ const Home = (): React.ReactElement => {
     inView11,
     inView12,
   ]
+  // Show Date Handling
   useEffect(() => {
     const isTyping = globalCtx.currentSearchValue.length > 0
     if (isTyping) {
@@ -278,7 +288,6 @@ const Home = (): React.ReactElement => {
     }
   }
   useEffect(() => {
-    console.log('odpalone')
     setRightDataValues(data)
   }, [globalCtx.cartArray])
 

@@ -14,7 +14,12 @@ const Cart: FC = (): ReactElement => {
     <>
       <Link to="/">
         <Button
-          sx={{ alignSelf: 'start', margin: 2, textDecoration: 'none',marginTop:12 }}
+          sx={{
+            alignSelf: 'start',
+            margin: 2,
+            textDecoration: 'none',
+            marginTop: 12,
+          }}
           variant="outlined"
           startIcon={<ArrowBackIcon />}
         >
@@ -32,21 +37,23 @@ const Cart: FC = (): ReactElement => {
         }}
       >
         {globalCtx.cartArray.map((item, idx) => {
-            return (
-              <ItemCard
-                key={uuidv4()}
-                bandName={item.bandName}
-                avatar={item.avatar}
-                picture={item.picture}
-                start={item.start}
-                end={item.end}
-                venueName={item.venueName}
-                venue={item.venue}
-                hidePlus={true}
-              />
-            )
+          return (
+            <ItemCard
+              key={uuidv4()}
+              bandName={item.bandName}
+              avatar={item.avatar}
+              picture={item.picture}
+              start={item.start}
+              end={item.end}
+              venueName={item.venueName}
+              venue={item.venue}
+              hidePlus={true}
+            />
+          )
         })}
-        {globalCtx.cartArray.length === 0 &&  <Typography variant="body1">No Items found</Typography>}
+        {globalCtx.cartArray.length === 0 && (
+          <Typography variant="body1">No Items found</Typography>
+        )}
       </Box>
     </>
   )
