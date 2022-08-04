@@ -18,6 +18,6 @@
 # How it looks 
 ![App Screenshot](assets/images/picture.png)
 
-Enjoj!
+Enjoy!
 
 
