@@ -34,7 +34,7 @@
   "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build",
-    "test": "react-scripts test",
+    "test": "yarn run jest",
     "eject": "react-scripts eject",
     "lint:fix": "eslint --fix '**/*.{js,cjs,mjs,jsx,ts,tsx}'",
     "lint:test": "eslint --cache '**/*.{js,cjs,mjs,jsx,ts,tsx}'",
